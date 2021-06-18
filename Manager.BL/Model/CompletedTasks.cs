@@ -19,5 +19,10 @@ namespace Manager.BL.Model
 
             TaskName = task;
         }
+
+        public override string ToString()
+        {
+            return TaskName;
+        }
     }
 }

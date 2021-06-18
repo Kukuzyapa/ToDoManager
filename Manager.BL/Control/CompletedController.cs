@@ -1,5 +1,6 @@
 ﻿using Manager.BL.Model;
 using System;
+using System.Collections.Generic;
 
 namespace Manager.BL.Control
 {
@@ -8,7 +9,9 @@ namespace Manager.BL.Control
         /// <summary>
         /// Получить выполненную задачу
         /// </summary>
-        public CompletedTasks Completed { get; }
+        public CompletedTasks Completed { get; private set; }
+
+        public List<CompletedTasks> CompletedTaskList = new List<CompletedTasks>();
 
         /// <summary>
         /// Создать новый контроллер выполненной задачи
@@ -19,6 +22,22 @@ namespace Manager.BL.Control
             // TODO: Проверка
 
             Completed = new CompletedTasks(task.Tasks.TaskName);
+            CompletedTaskList.Add(Completed);
+        }
+
+        public CompletedController()
+        {
+
+        }
+
+        public void GetCompletedTasks()
+        {
+            int i = 1;
+
+            foreach (CompletedTasks t in CompletedTaskList)
+            {
+                Console.WriteLine("\t" + i++ + ") " + t);
+            }
         }
 
 
