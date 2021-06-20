@@ -2,6 +2,7 @@
 
 namespace Manager.BL.Model
 {
+    [Serializable]
     public class Tasks
     {
         /// <summary>
@@ -14,9 +15,7 @@ namespace Manager.BL.Model
         /// </summary>
         /// <param name="task"> Присвоить имя задаче. </param>
         public Tasks(string task)
-        {
-            // TODO: проверка
-
+        {           
             TaskName = task;
         }
 

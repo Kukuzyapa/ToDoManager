@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Control\CompletedController.cs" />
     <Compile Include="Control\TasksController.cs" />
     <Compile Include="Model\CompletedTasks.cs" />
     <Compile Include="Model\Tasks.cs" />

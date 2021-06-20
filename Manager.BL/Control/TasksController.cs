@@ -1,48 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Manager.BL.Model;
 
 namespace Manager.BL.Control
 {
+    [Serializable]
     public class TasksController
     {
         /// <summary>
-        /// Получить задачу.
+        /// Задачи.
         /// </summary>
         public Tasks Tasks { get; private set; }
 
+        /// <summary>
+        /// Выполненные задачи.
+        /// </summary>
         public CompletedTasks CompletedTasks { get; private set; }
 
-
+        /// <summary>
+        /// Список выполненных задач.
+        /// </summary>
         public List<CompletedTasks> CompletedTasksList = new List<CompletedTasks>();
 
+        /// <summary>
+        /// Список задач.
+        /// </summary>
         public List<Tasks> TaskList = new List<Tasks>();
 
-
+        /// <summary>
+        /// Создать новый контроллер задач.
+        /// </summary>
+        public TasksController() { }
 
         /// <summary>
-        /// Создать новый контроллер задачи.
+        /// Удалить задачу.
         /// </summary>
-        /// <param name="task"> Задача </param>
-        public TasksController(string task)
-        {
-            // TODO: Проверка
-
-            Tasks = new Tasks(task);
-            TaskList.Add(Tasks);
-        }
-        public TasksController()
-        {
- 
-        }
-
-
-
+        /// <param name="key"> Номер задачи. </param>
         public void DeleteTask(int key)
         {
             if (key > TaskList.Count || key <= 0)
             {
                 Console.Clear();
+
                 Console.WriteLine("Нет задачи с таким номером.\nAnyKey - вернуться назад.");
                 Console.ReadKey();
             }
@@ -53,25 +54,36 @@ namespace Manager.BL.Control
             }
         }
 
+        /// <summary>
+        /// Получить задачи.
+        /// </summary>
         public void GetTasks()
         {
-            int i = 1;
+            int number = 1;
 
             foreach (Tasks t in TaskList)
             {
-                Console.WriteLine("\t" + i++ + ") " + t);
+                Console.WriteLine("\t" + number++ + ") " + t);
             }
         }
+
+        /// <summary>
+        /// Получить выполненные задачи.
+        /// </summary>
         public void GetCompletedTasks()
         {
-            int i = 1;
+            int number = 1;
 
             foreach (CompletedTasks t in CompletedTasksList)
             {
-                Console.WriteLine("\t" + i++ + ") " + t);
+                Console.WriteLine("\t" + number++ + ") " + t);
             }
         }
 
+        /// <summary>
+        /// Добавить задачу
+        /// </summary>
+        /// <param name="task"> Имя задачи. </param>
         public void AddTasks(string task)
         {
             if (string.IsNullOrWhiteSpace(task))
@@ -86,11 +98,17 @@ namespace Manager.BL.Control
             }
         }
 
+
+        /// <summary>
+        /// Добавить выполненную задачу
+        /// </summary>
+        /// <param name="key"> Номер задачи. </param>
         public void AddCompletedTasks(int key)
         {
             if (key > TaskList.Count || key <= 0)
             {
                 Console.Clear();
+
                 Console.WriteLine("Нет задачи с таким номером.\nAnyKey - вернуться назад.");
                 Console.ReadKey();
             }
@@ -98,17 +116,44 @@ namespace Manager.BL.Control
             {
                 CompletedTasks = new CompletedTasks(TaskList[key - 1].TaskName);
                 CompletedTasksList.Add(CompletedTasks);
+
                 DeleteTask(key);
             }
         }
 
-
-
-
-
-        public override string ToString()
+        /// <summary>
+        /// Загрузить или создать контроллер задач.
+        /// </summary>
+        /// <returns></returns>
+        public static TasksController Load()
         {
-            return Tasks.TaskName;
+            var formatter = new BinaryFormatter();
+
+            using (var fs = new FileStream("Tasks.dat", FileMode.OpenOrCreate))
+            {
+                if (fs.Length > 0 && formatter.Deserialize(fs) is TasksController items)
+                {
+                    return items;
+                }
+                else
+                {
+                    return new TasksController();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сохранить контроллер задач.
+        /// </summary>
+        /// <param name="item"> Контроллер. </param>
+        public void Save(object item)
+        {
+            var formatter = new BinaryFormatter();
+
+            using (var fs = new FileStream("Tasks.dat", FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, item);
+            }
         }
     }
 }
