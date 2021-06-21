@@ -1,6 +1,5 @@
 ﻿using Manager.BL.Control;
 using System;
-using System.Collections.Generic;
 
 namespace Manager.CMD
 {
@@ -10,7 +9,6 @@ namespace Manager.CMD
         {
             
             var Tasks = TasksController.Load();
-
 
             Console.WriteLine("Вас приветствует приложение ToDoManager");
 
@@ -52,10 +50,14 @@ namespace Manager.CMD
 
                             break;
                         }
-                        Tasks.GetTasks();
-                        
+
+                        Tasks.GetTasks();                       
                  
-                        Console.WriteLine("D - удалить задачу\nC - выполнить задачу\nAnyKey - вернуться назад");
+                        Console.WriteLine("D - удалить задачу." +
+                                        "\nC - выполнить задачу." +
+                                        "\nE - очистить список задач." +
+                                        "\nF - выполнить все задачи." +
+                                        "\nAnyKey - вернуться назад");
 
                         var Choice = Console.ReadKey();
                         Console.WriteLine();
@@ -106,6 +108,34 @@ namespace Manager.CMD
 
                                 break;
 
+                            case ConsoleKey.E: // Очищение списка задач.
+
+                                Console.Clear();
+
+                                Tasks.ClearTasks();
+                                Console.WriteLine("Список задач очищен.\nAnyKey - вернуться назад.");
+
+                                Console.ReadKey();
+                                Console.Clear();
+
+                                Tasks.Save(Tasks);
+
+                                break;
+
+                            case ConsoleKey.F: // Выполнение всех задач.
+
+                                Console.Clear();
+
+                                Tasks.CompleteAllTasks();
+                                Console.WriteLine("Все задачи выполнены.\nAnyKey - вернуться назад.");
+
+                                Console.ReadKey();
+                                Console.Clear();
+
+                                Tasks.Save(Tasks);
+
+                                break;
+
                             default:
 
                                 Console.Clear();
@@ -129,6 +159,96 @@ namespace Manager.CMD
                         }
 
                         Tasks.GetCompletedTasks();
+
+                        Console.WriteLine("D - удалить выполненную задачу." +
+                                        "\nR - вернуть выполненную задачу в список активных." +
+                                        "\nE - очистить список выполненных задач." +
+                                        "\nF - вернуть все выполненные задачи в список активных." +
+                                        "\nAnyKey - вернуться назад");
+
+                        var CompletedKey = Console.ReadKey();
+                        Console.WriteLine();
+
+                        switch (CompletedKey.Key)
+                        {
+                            case ConsoleKey.D: // Удаление выполненной задачи.
+
+                                Console.WriteLine("Какую задачу вы хотите удалить?");
+
+                                if (Int32.TryParse(Console.ReadLine(), out Key))
+                                {
+                                    Tasks.DeleteCompletedTask(Key);
+
+                                    Tasks.Save(Tasks);
+                                }
+                                else
+                                {
+                                    Console.Clear();
+
+                                    Console.WriteLine("Некорректный номер задачи.\nAnyKey - вернуться назад.");
+                                    Console.ReadKey();
+                                }
+
+                                Console.Clear();
+
+                                break;
+
+                            case ConsoleKey.R: // Возврат задачи.
+
+                                Console.WriteLine("Какую задачу вы хотите вернуть?");
+
+                                if (Int32.TryParse(Console.ReadLine(), out Key))
+                                {
+                                    Tasks.ReturnTask(Key);
+
+                                    Tasks.Save(Tasks);
+                                }
+                                else
+                                {
+                                    Console.Clear();
+
+                                    Console.WriteLine("Некорректный номер задачи.\nAnyKey - вернуться назад.");
+                                    Console.ReadKey();
+                                }
+
+                                Console.Clear();
+
+                                break;
+
+                            case ConsoleKey.E: // Очищение списка выполненных задач.
+
+                                Console.Clear();
+
+                                Tasks.ClearCompletedTasks();
+                                Console.WriteLine("Список выполненных задач очищен.\nAnyKey - вернуться назад.");
+
+                                Console.ReadKey();
+                                Console.Clear();
+
+                                Tasks.Save(Tasks);
+
+                                break;
+
+                            case ConsoleKey.F: // Возврат всех задач.
+
+                                Console.Clear();
+
+                                Tasks.ReturnAllTasks();
+                                Console.WriteLine("Все задачи возвращены в список активных.\nAnyKey - вернуться назад.");
+
+                                Console.ReadKey();
+                                Console.Clear();
+
+                                Tasks.Save(Tasks);
+
+                                break;
+
+                            default:
+
+                                Console.Clear();
+
+                                break;
+                        }
 
                         break;
 

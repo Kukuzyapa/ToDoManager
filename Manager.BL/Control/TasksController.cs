@@ -22,17 +22,75 @@ namespace Manager.BL.Control
         /// <summary>
         /// Список выполненных задач.
         /// </summary>
-        public List<CompletedTasks> CompletedTasksList = new List<CompletedTasks>();
+        public List<CompletedTasks> CompletedTasksList { get; }
 
         /// <summary>
         /// Список задач.
         /// </summary>
-        public List<Tasks> TaskList = new List<Tasks>();
+        public List<Tasks> TaskList { get; }
 
         /// <summary>
         /// Создать новый контроллер задач.
         /// </summary>
-        public TasksController() { }
+        public TasksController()
+        {
+            CompletedTasksList = new List<CompletedTasks>();
+            TaskList = new List<Tasks>();
+        }
+
+        /// <summary>
+        /// Добавить задачу
+        /// </summary>
+        /// <param name="task"> Имя задачи. </param>
+        public void AddTasks(string task)
+        {
+            if (string.IsNullOrWhiteSpace(task))
+            {
+                Console.WriteLine("Задача не может быть пустой.\nAnyKey - вернуться назад.");
+                Console.ReadKey();
+            }
+            else
+            {
+                Tasks = new Tasks(task);
+                TaskList.Add(Tasks);
+            }
+        }
+
+        /// <summary>
+        /// Добавить выполненную задачу
+        /// </summary>
+        /// <param name="key"> Номер задачи. </param>
+        public void AddCompletedTasks(int key)
+        {
+            if (key > TaskList.Count || key <= 0)
+            {
+                Console.Clear();
+
+                Console.WriteLine("Нет задачи с таким номером.\nAnyKey - вернуться назад.");
+                Console.ReadKey();
+            }
+            else
+            {
+                CompletedTasks = new CompletedTasks(TaskList[key - 1].TaskName);
+                CompletedTasksList.Add(CompletedTasks);
+
+                DeleteTask(key);
+            }
+        }
+
+        /// <summary>
+        /// Выполнить все задачи.
+        /// </summary>
+        public void CompleteAllTasks()
+        {
+            foreach (Tasks t in TaskList)
+            {
+                CompletedTasks = new CompletedTasks(t.TaskName);
+                CompletedTasksList.Add(CompletedTasks);
+            }
+
+            ClearTasks();            
+        }
 
         /// <summary>
         /// Удалить задачу.
@@ -51,6 +109,26 @@ namespace Manager.BL.Control
             {
 
                 TaskList.RemoveAt(key - 1);
+            }
+        }
+
+        /// <summary>
+        /// Удалить выполненную задачу.
+        /// </summary>
+        /// <param name="key"> Номер задачи. </param>
+        public void DeleteCompletedTask(int key)
+        {
+            if (key > CompletedTasksList.Count || key <= 0)
+            {
+                Console.Clear();
+
+                Console.WriteLine("Нет задачи с таким номером.\nAnyKey - вернуться назад.");
+                Console.ReadKey();
+            }
+            else
+            {
+
+                CompletedTasksList.RemoveAt(key - 1);
             }
         }
 
@@ -81,31 +159,28 @@ namespace Manager.BL.Control
         }
 
         /// <summary>
-        /// Добавить задачу
+        /// Очистить список задач.
         /// </summary>
-        /// <param name="task"> Имя задачи. </param>
-        public void AddTasks(string task)
+        public void ClearTasks()
         {
-            if (string.IsNullOrWhiteSpace(task))
-            {
-                Console.WriteLine("Задача не может быть пустой.\nAnyKey - вернуться назад.");
-                Console.ReadKey();
-            }
-            else
-            {
-                Tasks = new Tasks(task);
-                TaskList.Add(Tasks);
-            }
+            TaskList.Clear();
         }
 
+        /// <summary>
+        /// Очистить список выполненных задач.
+        /// </summary>
+        public void ClearCompletedTasks()
+        {
+            CompletedTasksList.Clear();
+        }
 
         /// <summary>
-        /// Добавить выполненную задачу
+        /// Вернуть выполненную задачу в список активных задач.
         /// </summary>
         /// <param name="key"> Номер задачи. </param>
-        public void AddCompletedTasks(int key)
+        public void ReturnTask(int key)
         {
-            if (key > TaskList.Count || key <= 0)
+            if (key > CompletedTasksList.Count || key <= 0)
             {
                 Console.Clear();
 
@@ -114,11 +189,25 @@ namespace Manager.BL.Control
             }
             else
             {
-                CompletedTasks = new CompletedTasks(TaskList[key - 1].TaskName);
-                CompletedTasksList.Add(CompletedTasks);
+                Tasks = new Tasks(CompletedTasksList[key - 1].TaskName);
+                TaskList.Add(Tasks);
 
-                DeleteTask(key);
+                DeleteCompletedTask(key);
             }
+        }
+
+        /// <summary>
+        /// Вернуть все выполненные задачи в список активных задач.
+        /// </summary>
+        public void ReturnAllTasks()
+        {
+            foreach(CompletedTasks t in CompletedTasksList)
+            {
+                Tasks = new Tasks(t.TaskName);
+                TaskList.Add(Tasks);
+            }
+
+            ClearCompletedTasks();
         }
 
         /// <summary>
